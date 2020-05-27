@@ -56,9 +56,6 @@ function detectPersonalLevel() {
 detectPersonalLevel();
 
 
-console.log (personalMovieDB);
-
-
 function showMyDB(hidden) {
     if (!hidden) {
         console.log(personalMovieDB);
@@ -79,3 +76,5 @@ function writeYourGenres() {
 }
 
 writeYourGenres();
+
+console.log (personalMovieDB);
