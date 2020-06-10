@@ -105,6 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
         modalCloseBtn = document.querySelector('[data-close]');
 
 
+    modalTrigger.forEach(item => {
+        item.addEventListener('click', openModal);
+    });
+
     function openModal() { // функция создана чтобы не повторять код
         modal.classList.add('show');
         modal.classList.remove('hide');
@@ -114,9 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(modalTimerId); // если юзер сам откроет modal, то он не откроется через таймаут
     };
 
-    modalTrigger.forEach(item => {
-        item.addEventListener('click', openModal);
-    });
 
     function closeModal() { // функция создана чтобы не повторять код
         modal.classList.add('hide');
@@ -139,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    /* const modalTimerId = setTimeout(openModal, 5000); */ // открытие modal через время
+    const modalTimerId = setTimeout(openModal, 2000); // открытие modal через время
 
     function showModalByScroll() { // сделана для назначения removeEventListener
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) { // если величина пролистанного и величина видимого >= величине страницы
@@ -224,4 +225,63 @@ document.addEventListener('DOMContentLoaded', () => {
         '.menu .container',
         'menu__item'
     ).render();
+
+
+    
+    // Forms
+
+    const forms = document.querySelectorAll('form');
+
+    const massage = {
+        loading: 'Загрузка',
+        succes: 'Спасибо! Скоро мы вам перезвоним...',
+        failure: 'Что-то пошло не так...'
+    };
+
+    forms.forEach(item => {
+        postData(item);
+    });
+
+    function postData(form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const statusMassage = document.createElement('div');
+            statusMassage.classList.add('status');
+            statusMassage.textContent = massage.loading;
+            form.append(statusMassage);
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+
+            request.setRequestHeader('Content-type', 'aplication/json');
+
+            const formData = new FormData(form);
+
+            const object = {};
+            formData.forEach(function(value, key){
+                object[key] = value;
+            });
+
+            const json = JSON.stringify(object);
+
+            request.send(json);
+
+            request.addEventListener('load', () => {
+                if (request.status === 200) {
+                    console.log(request.response);
+                    statusMassage.textContent = massage.succes;
+                    form.reset();
+                    setTimeout(() => {
+                        statusMassage.remove();
+                    }, 2000);
+
+                } else {
+                    statusMassage.textContent = massage.failure;
+                };
+            });
+        });
+    };
+
+
 });
